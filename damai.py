@@ -13,38 +13,49 @@ import time
 
 # 设置抢票链接和开票时间
 
-# URL = "https://piao.damai.cn/146290.html?spm=a2o6e.search.0.0.7e2b4d157EDtjL"# PC页面
+URL = "https://blpw.polyt.cn/show/18030000000004370"# PC页面
 
-URL = 'http://m.damai.cn/damai/perform/item.html?projectId=146290'#手机页面
+#URL = 'http://m.damai.cn/damai/perform/item.html?projectId=146290'#手机页面
 # HOUR = 19
 MIN  = 0
-USERNAME = "13112390306"
+USERNAME = "15900933065"
 
 driver = webdriver.Chrome()
 # 设置等待时间
 wait = WebDriverWait(driver, 5)
-driver.get(URL)
+print('sleep 30 start')
 
+driver.get(URL)
+time.sleep(35)
+print('sleep finish')
 """
 PC端网页抢票操作
 """
 def choose(seletor):
+    print('get in choose', seletor)
     try:
-        # 控件可点击时才选定
+        # 控件可点击时才选
         choice = wait.until(EC.element_to_be_clickable((By.XPATH, seletor)))
+        print('choosing :', choice)
         return choice
     except TimeoutException as e:
-        print("Time out!")
+        print("Time out!", seletor)
         return None
     except Exception:
-        print("Not found!")
+        print("Not found!", seletor)
         return None
 
 def login():
     # 点击登录
-    login = choose('//*[@id="userLoginInfo"]/span/a[1]')
+    print('login start')
+    ##commonLoginUser login = choose('<a id="commonLoginUser" style="" href="javascript:void(0)" onclick="loginDivShow()">登录</a>')
+    #login = driver.find_element_by_xpath('//*[@id="commonLoginUser"]').click()
+    login = choose('//*[@id="commonLoginUser"]')
+    time.sleep(5)
+    print('logining: seccess', login)
     login.click()
-    username = choose('//*[@id="login_email"]')
+    print('login clicked')
+    username = choose('//*[@id="loginForm"]/div[2]/input')
     username.send_keys(USERNAME)
     """
     由于密码框控件被设置为不可见
@@ -52,16 +63,24 @@ def login():
     方便刷新
     （也可用cookie实现）
     """
-    password = choose('//*[@id="login_pwd_txt"]')
+    password = choose('//*[@id="pwd"]')
     try:
         password.click()
-        password.send_keys("********")
+        password.send_keys("yifyang29bl")
     except Exception:
         print(password)
         print("Password Can't click")
+    #user_rem = choose('//*[@id="loginForm"]/div[5]/div[1]/input')
+    #user_rem.click()
+    
+    submit = choose('//*[@id="loginForm"]/div[4]/button')
+    submit.click()
+
+    print('login in func finish successfly')
 
 def buy():
     # 点击价格
+    print('start buying')
     try:
         price = None
         plus = None
@@ -74,34 +93,40 @@ def buy():
         # 选择价格
         while None == price:
             # 这里选的是580票面的，如果选其他票面，修改最后的li[*]即可
-            price = choose('//*[@id="priceList"]/div/ul/li[3]')
+            #price = choose('//*[@id="priceList"]/div/ul/li[3]')
+            price = choose('/html/body/div[3]/div[2]/dl/dd[2]/div[3]/div[1]/dl/dd/div[2]')
+            print('click time', price)
         price.click()
         # 数量加1
         while None == plus:
-            plus = choose('//*[@id="cartList"]/div[1]/ul/li/span[3]/a[2]')
+            plus = choose(r'//*[@id="itemValue1"]')
+            print('click money', plus)
         plus.click()
         # 立即抢购
         while None == buybtn:
-            buybtn = choose('//*[@id="btnBuyNow"]')
+            buybtn = choose(r'//*[@id="submitTicket"]')
         driver.execute_script("arguments[0].scrollIntoView();", buybtn) 
+        print("buybtn finish", buybtn)
         buybtn.click()
+        time.sleep(5)
         # 选择购票人
         while None == booker:
-            booker = choose('/html/body/div[3]/div[3]/div[2]/div[2]/div/a')
+            booker = choose('//*[@id="35_42"]')
         driver.execute_script("arguments[0].scrollIntoView();", booker) 
         booker.click()
         # 选择、确定
         while None == select:
-            select = choose('/html/body/div[3]/div[3]/div[12]/div/div[2]/div/div[2]/div/table/tbody/tr/label/td[1]/input')
+            select = choose('//*[@id="commitSeat"]')
         driver.execute_script("arguments[0].scrollIntoView();", select) 
         select.click()
+        time.sleep(5)
         while None == confirm:
-            confirm = choose('/html/body/div[3]/div[3]/div[12]/div/div[2]/div/p/div/a')
+            confirm = choose('//*[@id="commitForm"]/div/div[1]/ul/li[2]')
         driver.execute_script("arguments[0].scrollIntoView();", confirm) 
         confirm.click()
         # 提交订单
         while None == submit:
-            submit = choose('//*[@id="orderConfirmSubmit"]')
+            submit = choose('//*[@id="submit"]')
         driver.execute_script("arguments[0].scrollIntoView();", submit) 
         submit.click()
     except Exception:
@@ -155,7 +180,7 @@ def buy_mobile():
         # 580票面
         price = None
         while None == price:
-            price = choose('//html/body/div[1]/div/div[2]/ul/li[3]')
+            price = choose('//*[@id="35_19"]')
         driver.execute_script("arguments[0].scrollIntoView();", price) 
         price.click()
         # 数量+1
@@ -194,10 +219,12 @@ def test_mobile():
     print("抢票成功")
 
 def main():
+    print('login begin')
     # 默认PC网页，手机网页对应修改即可
     login()
+    print('login success')
     # 30秒等待用户输入密码后再开始刷
-    time.sleep(30)
+    time.sleep(10)
     while 1:
         if MIN == time.localtime().tm_min:
             print("开始抢票")
@@ -206,5 +233,5 @@ def main():
 
 if __name__ == '__main__':
     # test()
-    test_mobile()
-    # main()
+    #est_mobile()
+    main()
