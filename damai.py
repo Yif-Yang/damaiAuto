@@ -18,7 +18,7 @@ URL = "https://blpw.polyt.cn/show/18030000000004370"# PC页面
 #URL = 'http://m.damai.cn/damai/perform/item.html?projectId=146290'#手机页面
 # HOUR = 19
 MIN  = 0
-USERNAME = "15900933065"
+USERNAME = "your_user_name"
 
 driver = webdriver.Chrome()
 # 设置等待时间
@@ -66,7 +66,7 @@ def login():
     password = choose('//*[@id="pwd"]')
     try:
         password.click()
-        password.send_keys("yifyang29bl")
+        password.send_keys("yourpassword")
     except Exception:
         print(password)
         print("Password Can't click")
